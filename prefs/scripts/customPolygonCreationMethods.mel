@@ -1,0 +1,129 @@
+/* Copyright 2022 by Kyle Joswiak
+ *
+ * This is released under the "MIT License Agreement".
+ * See License file that should have been included in distribution.
+ *
+ * Scripts to create maya primitives with custom pivots or attributes.
+ * Objects are created using default maya methods, and then given a
+ * history node that is linked to by creation node to both preserve original
+ * primitive customizability and maintain custom pivots / attributes
+ * regardless of base parameters.
+ */
+
+// Cube with pivot on middle of bottom face
+global proc string[] polyCubePivotGround() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCube`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".height / 2.0");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Cube with pivot on middle of bottom left edge
+global proc string[] polyCubePivotEdge() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCube`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".height / 2.0 ; " + $move_node[0] + ".tx = " + $new_poly[1]+ ".width / 2.0 ;");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Cube with pivot on back bottom left corner
+global proc string[] polyCubePivotCorner() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCube`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".height / 2.0 ; " + $move_node[0] + ".tx = " + $new_poly[1]+ ".width / 2.0 ; " + $move_node[0] + ".tz = " + $new_poly[1]+ ".depth / 2.0 ; ");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Cylinder with pivot on middle of bottom face
+global proc string[] polyCylinderPivotGround() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCylinder -sx 16 -sz 1`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".height / 2.0");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Cylinder turned on side (along x axis) with pivot on middle of bottommost edge
+global proc string[] polyCylinderPivotSide() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCylinder -sx 16 -sy 2 -sz 1`;
+    $move_node = `polyMoveVertex -rz 90 ($new_poly[0])`;
+    connectAttr ($new_poly[1]+ ".radius") ($move_node[0] + ".tx") ;
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Plane with pivot on middle of left edge
+global proc string[] polyPlanePivotEdge() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyPlane`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".tx = " + $new_poly[1]+ ".width / 2.0");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Plane with pivot on middle of back left corner
+global proc string[] polyPlanePivotCorner() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyPlane`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".tx = " + $new_poly[1]+ ".width / 2.0 ; " + $move_node[0] + ".tz = " + $new_poly[1]+ ".height / 2.0 ; ");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Pyramid with pivot on middle of bottom face
+global proc string[] polyPyramidPivotGround() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyPyramid`;
+    $move_node = `polyMoveVertex -ry 45 ($new_poly[0])`;
+    // 2.82842712475 = 2.0 * sqrt(2)
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".sideLength / 2.82842712475");
+    
+    select $new_poly;
+    return $new_poly;
+}
+
+// Cone with pivot on middle of bottom face
+global proc string[] polyConePivotGround() {
+    string $new_poly[];
+    string $move_node[];
+    
+    $new_poly = `polyCone -sx 16 -sc 1`;
+    $move_node = `polyMoveVertex ($new_poly[0])`;
+    expression -s ($move_node[0] + ".ty = " + $new_poly[1]+ ".height / 2.0");
+    
+    select $new_poly;
+    return $new_poly;
+}
